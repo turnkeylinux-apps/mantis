@@ -1,0 +1,44 @@
+#!/bin/sh -ex
+
+NAME=mantis
+ADMIN_NAME=admin
+ADMIN_PASS=turnkey
+
+# convenience symlinks
+ln -s /usr/share/mantis/www /var/www/webroot
+ln -s /etc/mantis /var/www/config
+
+# start mysql server
+/etc/init.d/mysql start
+
+debconf-set-selections << EOF
+mantis mantis/dbconfig-reinstall boolean true
+EOF
+DEBIAN_FRONTEND=noninteractive dpkg-reconfigure mantis
+
+# set mantis administrator credentials
+MD5_PASS=$(echo -n $ADMIN_PASS | md5sum | cut -d " " -f 1)
+
+mysql --defaults-extra-file=/etc/mysql/debian.cnf <<EOF
+USE $NAME;
+UPDATE ${NAME}_user_table SET
+username = '$ADMIN_NAME',
+password = '$MD5_PASS'
+WHERE id = 1;
+EOF
+
+# stop mysql server
+/etc/init.d/mysql stop
+
+# apache configuration
+rm -f /etc/apache2/conf.d/mantis
+touch /etc/apache2/conf.d/mantis
+ln -s /etc/mantis/apache.conf /etc/apache2/sites-available/mantis
+a2dissite default
+a2ensite mantis
+
+# mantis manual
+MANZIP=/var/www/mantis.manual.zip
+unzip $MANZIP -d /var/www
+rm $MANZIP
+
