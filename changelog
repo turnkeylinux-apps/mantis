@@ -1,6 +1,6 @@
 turnkey-mantis-12.1 (1) turnkey; urgency=low
 
-  * Latest version of Mantis will be installed at build time.
+  * Latest Debian Squeeze package version of Mantis.
 
   * Added phpsh (interative shell for PHP) and php5-cli (generically useful).
 
