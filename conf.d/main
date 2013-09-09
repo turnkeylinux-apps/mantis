@@ -1,44 +1,48 @@
-#!/bin/sh -ex
+#!/bin/bash -ex
 
-NAME=mantis
+DB_NAME=mantis
+DB_USER=mantis
+DB_PASS=$(mcookie)
+
 ADMIN_NAME=admin
+ADMIN_MAIL=admin@example.com
 ADMIN_PASS=turnkey
+
+# start services
+/etc/init.d/mysql start
+/etc/init.d/apache2 start
+
+# complete installation
+URL="http://127.0.0.1/admin/install.php"
+CURL="curl -c /tmp/cookie -b /tmp/cookie"
+EMAIL=$(echo $ADMIN_MAIL | sed s/@/%40/)
+$CURL $URL --data "install=2&db_type=mysql&hostname=localhost&admin_username=root&admin_password=$MYSQL_PASS&g_administrator_email=root%40localhost&database_name=mantis&db_username=mantis&db_password=$DB_PASS&g_webmaster_email=$EMAIL&db_admin_mantis_password=$ADMIN_PASS&user_confirm_debian=1&go=Install+%2F+Upgrade+Database"
+rm -f /tmp/cookie
+
+# change administrator name to admin
+mysql --defaults-extra-file=/etc/mysql/debian.cnf <<EOF
+USE $DB_NAME;
+UPDATE mantis_user_table SET username = '$ADMIN_NAME' WHERE id = 1;
+EOF
+
+# Deny access to admin directory (provides unauthenticated DB access)
+cat >> /etc/mantis/apache.conf <<EOF
+<Directory /usr/share/mantis/www/admin>
+    order deny,allow
+    deny from all
+</Directory>
+EOF
 
 # convenience symlinks
 ln -s /usr/share/mantis/www /var/www/webroot
 ln -s /etc/mantis /var/www/config
 
-# start mysql server
-/etc/init.d/mysql start
-
-debconf-set-selections << EOF
-mantis mantis/dbconfig-reinstall boolean true
-EOF
-DEBIAN_FRONTEND=noninteractive dpkg-reconfigure mantis
-
-# set mantis administrator credentials
-MD5_PASS=$(echo -n $ADMIN_PASS | md5sum | cut -d " " -f 1)
-
-mysql --defaults-extra-file=/etc/mysql/debian.cnf <<EOF
-USE $NAME;
-UPDATE ${NAME}_user_table SET
-username = '$ADMIN_NAME',
-password = '$MD5_PASS'
-WHERE id = 1;
-EOF
-
-# stop mysql server
-/etc/init.d/mysql stop
-
-# apache configuration
-rm -f /etc/apache2/conf.d/mantis
-touch /etc/apache2/conf.d/mantis
-ln -s /etc/mantis/apache.conf /etc/apache2/sites-available/mantis
-a2dissite default
-a2ensite mantis
-
 # mantis manual
 MANZIP=/var/www/mantis.manual.zip
 unzip $MANZIP -d /var/www
 rm $MANZIP
+
+# stop services
+/etc/init.d/mysql stop
+/etc/init.d/apache2 stop
 
