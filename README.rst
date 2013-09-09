@@ -25,6 +25,7 @@ and on top of that:
 
 - Configure system email addresses: */etc/mantis/config\_inc.php*
 - Integrate Mantis with twitter: */etc/mantis/config\_local.php*
+- Administration guide available: http://appliance_addr/docs
 
 Credentials *(passwords set at first boot)*
 -------------------------------------------

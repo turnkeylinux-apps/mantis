@@ -33,14 +33,12 @@ cat >> /etc/mantis/apache.conf <<EOF
 </Directory>
 EOF
 
-# convenience symlinks
+# convenience symlinks and link to administration guide
 ln -s /usr/share/mantis/www /var/www/webroot
 ln -s /etc/mantis /var/www/config
 
-# mantis manual
-MANZIP=/var/www/mantis.manual.zip
-unzip $MANZIP -d /var/www
-rm $MANZIP
+mkdir -p /var/www/docs
+ln -s /usr/share/doc/mantis/adminguide/administration_guide.html /var/www/docs/index.html
 
 # stop services
 /etc/init.d/mysql stop
