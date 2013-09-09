@@ -1,5 +1,3 @@
-root.build/ignore-errors = mantis
-
 COMMON_CONF += apache-credit
 
 CREDIT_LOCATION = ~ "^/(?!(manual))"
