@@ -64,3 +64,6 @@ service apache2 stop
 rm -f /tmp/cookie
 rm -rf $WEBROOT/admin
 
+mkdir -p /etc/mantis
+ln -s $WEBROOT/config_inc.php /etc/mantis/config_inc.php
+
