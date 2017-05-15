@@ -21,6 +21,7 @@ a2ensite mantis
 
 chown www-data:www-data $WEBROOT
 chown www-data:www-data $WEBROOT/admin
+chown -R www-data:www-data $WEBROOT/config
 
 service mysql start
 service apache2 start
@@ -37,8 +38,7 @@ $MYSQL_BATCH --execute "grant all privileges on $DB_NAME.* to $DB_USER@localhost
 
 URL="http://127.0.0.1/admin/install.php"
 CURL="curl -c /tmp/cookie -b /tmp/cookie"
-EMAIL=$(echo $ADMIN_MAIL | sed s/@/%40/)
-$CURL $URL --data "db_type=mysqli&hostname=localhost&db_username=$DB_USER&db_password=$DB_PASS&database_name=$DB_NAME&admin_username=&admin_password=&install=2&go=Install%2FUpgrade+Database"
+$CURL $URL --data "db_type=mysqli&hostname=localhost&db_username=$DB_USER&db_password=$DB_PASS&database_name=$DB_NAME&admin_username=&admin_password=&db_table_prefix=mantis&db_table_plugin_prefix=plugin&db_table_suffix=table&timezone=UTC&install=2&go=Install%2FUpgrade+Database"
 
 # change administrator name to admin
 mysql --defaults-extra-file=/etc/mysql/debian.cnf <<EOF
@@ -47,7 +47,7 @@ UPDATE mantis_user_table SET username = '$ADMIN_NAME' WHERE id = 1;
 EOF
 
 # add settings
-cat << 'EOF' >> $WEBROOT/config_inc.php
+cat << 'EOF' >> $WEBROOT/config/config_inc.php
 
 // support graphing
 $g_use_jpgraph = true;
@@ -66,4 +66,5 @@ rm -rf $WEBROOT/admin
 
 mkdir -p /etc/mantis
 ln -s $WEBROOT/config_inc.php /etc/mantis/config_inc.php
+chown -R root:root $WEBROOT/config
 
