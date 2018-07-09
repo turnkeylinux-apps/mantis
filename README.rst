@@ -28,7 +28,8 @@ and on top of that:
 Credentials *(passwords set at first boot)*
 -------------------------------------------
 
--  Webmin, Webshell, SSH, MySQL: username **root**
+-  Webmin, SSH, MySQL: username **root**
+-  Adminer: username **adminer**
 -  Mantis: username **admin**
 
 
