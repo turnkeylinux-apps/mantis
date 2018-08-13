@@ -12,8 +12,12 @@ and on top of that:
 
 - Mantis configurations:
    
-   - Installed from upstream source package. See /var/www for contents.
+   - Installed from upstream source code to /var/www/mantis
    - Includes graphing support, Twitter integration and documentation.
+
+     **Security note**: Updates to Mantis may require supervision so
+     they **ARE NOT** configured to install automatically. See `Mantis
+     documentation`_ for upgrading.
 
 - SSL support out of the box.
 - `Adminer`_ administration frontend for MySQL (listening on port
@@ -33,6 +37,7 @@ Credentials *(passwords set at first boot)*
 -  Mantis: username **admin**
 
 
-.. _MantisBT: http://www.mantisbt.org
+.. _MantisBT: https://www.mantisbt.org
 .. _TurnKey Core: https://www.turnkeylinux.org/core
-.. _Adminer: http://www.adminer.org/
+.. _Mantis documentation: https://www.mantisbt.org/docs/master/en-US/Admin_Guide/html/admin.install.upgrade.html
+.. _Adminer: https://www.adminer.org/
