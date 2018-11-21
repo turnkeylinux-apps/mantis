@@ -1,3 +1,12 @@
+turnkey-mantis-15.1 (1) turnkey; urgency=low
+
+  * Update to the latest upstream source version (2.18.0).
+
+  * Rebuild to resolve inadvertant removal of mariadb during sec-updates
+    - part of #1246.
+
+ -- Jeremy Davis <jeremy@turnkeylinux.org>  Wed, 21 Nov 2018 18:40:58 +1100
+
 turnkey-mantis-15.0 (1) turnkey; urgency=low
 
   * Upgraded to the latest upstream source version (2.15.0)
