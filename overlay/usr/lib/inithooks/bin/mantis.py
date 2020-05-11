@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 """Set Mantis admin password and email
 
 Option:
@@ -16,16 +16,16 @@ from mysqlconf import MySQL
 
 def usage(s=None):
     if s:
-        print >> sys.stderr, "Error:", s
-    print >> sys.stderr, "Syntax: %s [options]" % sys.argv[0]
-    print >> sys.stderr, __doc__
+        print("Error:", s, file=sys.stderr)
+    print("Syntax: %s [options]" % sys.argv[0], file=sys.stderr)
+    print(__doc__, file=sys.stderr)
     sys.exit(1)
 
 def main():
     try:
         opts, args = getopt.gnu_getopt(sys.argv[1:], "h",
                                        ['help', 'pass=', 'email='])
-    except getopt.GetoptError, e:
+    except getopt.GetoptError as e:
         usage(e)
 
     password = ""
@@ -53,11 +53,11 @@ def main():
             "Enter email address for the Mantis 'admin' account.",
             "admin@example.com")
     
-    hashpass = hashlib.md5(password).hexdigest()
+    hashpass = hashlib.md5(password.encode('utf8')).hexdigest()
 
     m = MySQL()
-    m.execute('UPDATE mantis.mantis_user_table SET email=\"%s\" WHERE username=\"admin\";' % email)
-    m.execute('UPDATE mantis.mantis_user_table SET password=\"%s\" WHERE username=\"admin\";' % hashpass)
+    m.execute('UPDATE mantis.mantis_user_table SET email=%s WHERE username=\"admin\";', (email,))
+    m.execute('UPDATE mantis.mantis_user_table SET password=%s WHERE username=\"admin\";', (hashpass,))
 
 if __name__ == "__main__":
     main()
