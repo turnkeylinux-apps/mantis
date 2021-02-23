@@ -5,7 +5,7 @@ dl() {
     cd $2; curl -L -f -O $PROXY $1; cd -
 }
 
-VERSION=2.24.1
+VERSION=2.24.4
 SRC="/usr/local/src"
 URL="http://downloads.sourceforge.net/project/mantisbt/mantis-stable/$VERSION/mantisbt-$VERSION.tar.gz"
 

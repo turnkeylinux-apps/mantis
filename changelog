@@ -1,3 +1,12 @@
+turnkey-mantis-16.1 (1) turnkey; urgency=low
+
+  * Update to latest upstream source version: 2.24.4.
+
+  * Note: Please refer to turnkey-core's changelog for changes common to all
+    appliances. Here we only describe changes specific to this appliance.
+
+ -- Stefan Daviss <stefan@turnkeylinux.org>  Tue, 23 Feb 2021 08:27:55 +1100
+
 turnkey-mantis-16.0 (1) turnkey; urgency=low
 
   * Update to latest upstream source version - 2.24.1.
