@@ -11,7 +11,7 @@ import sys
 import getopt
 import hashlib
 
-from dialog_wrapper import Dialog
+from libinithooks.dialog_wrapper import Dialog
 from mysqlconf import MySQL
 
 def usage(s=None):

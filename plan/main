@@ -1,6 +1,6 @@
 #include <turnkey/base>
 #include <turnkey/lamp>
 
-php7.3-curl         /* mantis twitter integration */
+php-curl         /* mantis twitter integration */
 libphp-jpgraph      /* mantis graphing support */
-php7.3-mbstring
+php-mbstring
