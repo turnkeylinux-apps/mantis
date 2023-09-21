@@ -7,7 +7,7 @@ dl() {
 
 VERSION=2.25.7
 SRC="/usr/local/src"
-URL="http://downloads.sourceforge.net/project/mantisbt/mantis-stable/$VERSION/mantisbt-$VERSION.tar.gz"
+URL="https://downloads.sourceforge.net/project/mantisbt/mantis-stable/$VERSION/mantisbt-$VERSION.tar.gz"
 
 dl $URL $SRC
 
