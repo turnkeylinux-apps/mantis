@@ -1,6 +1,6 @@
 turnkey-mantis-18.0 (1) turnkey; urgency=low
 
-  * Update to latest upstream source version: 2.25.7
+  * Update to latest upstream source version: 2.25.8
 
   * Include and enable mod_evasive and mod_security2 by default in Apache.
     [ Stefan Davis <Stefan@turnkeylinux.org> ]
@@ -69,7 +69,7 @@ turnkey-mantis-18.0 (1) turnkey; urgency=low
     - Improve turnkey-artisan so that it works reliably in cron jobs (only
       Laravel based LAMP apps).
 
- -- Stefan Davis <stefan@turnkeylinux.org>  Thu, 21 Sep 2023 22:10:12 +0000
+ -- Stefan Davis <stefan@turnkeylinux.org>  Mon, 16 Oct 2023 18:38:17 +0000
 
 turnkey-mantis-17.1 (1) turnkey; urgency=low
 
