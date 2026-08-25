@@ -13,7 +13,7 @@ and on top of that:
 - Mantis configurations:
    
    - Installed from upstream source code to /var/www/mantis
-   - Includes graphing support, Twitter integration and documentation.
+   - Includes the upstream administration documentation.
 
      **Security note**: Updates to Mantis may require supervision so
      they **ARE NOT** configured to install automatically. See `Mantis
@@ -26,8 +26,8 @@ and on top of that:
   password recovery).
 - Webmin modules for configuring Apache2, PHP, MySQL and Postfix.
 
-- Configure system email addresses: */etc/mantis/config\_inc.php*
-- Integrate Mantis with twitter: */etc/mantis/config\_inc.php*
+- Configure Mantis settings, including system email addresses:
+  */etc/mantis/config\_inc.php*
 
 Credentials *(passwords set at first boot)*
 -------------------------------------------
@@ -39,5 +39,5 @@ Credentials *(passwords set at first boot)*
 
 .. _MantisBT: https://www.mantisbt.org
 .. _TurnKey Core: https://www.turnkeylinux.org/core
-.. _Mantis documentation: https://www.mantisbt.org/docs/master/en-US/Admin_Guide/html/admin.install.upgrade.html
+.. _Mantis documentation: https://github.com/mantisbt/mantisbt#upgrading
 .. _Adminer: https://www.adminer.org/

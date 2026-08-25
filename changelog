@@ -1,3 +1,16 @@
+turnkey-mantis-19.0 (1) turnkey; urgency=low
+
+  * Update to the supported upstream MantisBT 2.28.4 release.
+
+  * Verify the upstream release archive with its published SHA-256 digest.
+
+  * Support Debian 13/Trixie, including PHP 8.4 and MariaDB 11.8.
+
+  * Preserve dynamic deployment URLs and expose the active Mantis
+    configuration at /etc/mantis/config_inc.php.
+
+ -- TurnKey Linux Developers <admin@turnkeylinux.org>  Tue, 25 Aug 2026 09:30:00 +0000
+
 turnkey-mantis-18.0 (1) turnkey; urgency=low
 
   * Update to latest upstream source version: 2.25.8

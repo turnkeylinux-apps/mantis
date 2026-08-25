@@ -1,70 +1,75 @@
-#!/bin/bash -ex
+#!/bin/bash
+set -Eeuxo pipefail
 
 DB_NAME=mantis
 DB_USER=mantis
 DB_PASS=$(mcookie)
 
 ADMIN_NAME=admin
-ADMIN_MAIL=admin@example.com
-ADMIN_PASS=turnkey
 
-WEBROOT=/var/www/mantis
 SRC=/usr/local/src
+WEBROOT=/var/www/mantis
+VERSION=2.28.4
+ARCHIVE="$SRC/mantisbt-$VERSION.tar.gz"
+CONF="$WEBROOT/config/config_inc.php"
 
 # unpack
-tar xf $SRC/mantisbt-*.tar.gz --no-same-owner -C $(dirname $WEBROOT)
-mv $(dirname $WEBROOT)/mantisbt-* $WEBROOT
-rm $SRC/mantisbt-*.tar.gz
+tar xf "$ARCHIVE" --no-same-owner -C "$(dirname "$WEBROOT")"
+mv "$(dirname "$WEBROOT")/mantisbt-$VERSION" "$WEBROOT"
+rm "$ARCHIVE"
+grep -Fq "define( 'MANTIS_VERSION', '$VERSION' );" \
+    "$WEBROOT/core/constant_inc.php"
 
 a2dissite 000-default
 a2ensite mantis
 
-chown www-data:www-data $WEBROOT
-chown www-data:www-data $WEBROOT/admin
-chown -R www-data:www-data $WEBROOT/config
+chown -R root:root "$WEBROOT"
+chmod 0755 "$WEBROOT"
+chown -R www-data:www-data "$WEBROOT/config"
 
-service mysql start
+service mariadb start
 service apache2 start
 
 # create DB
-
-MYSQL_BATCH="mysql --user=root --password=$MYSQL_PASS --batch"
-MYSQL_ADMIN="mysqladmin --user=root --password=$MYSQL_PASS"
-
-$MYSQL_ADMIN create $DB_NAME
-$MYSQL_BATCH --execute "grant all privileges on $DB_NAME.* to $DB_USER@localhost identified by '$DB_PASS'; flush privileges;"
+mariadb --batch --execute "CREATE DATABASE $DB_NAME CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci; CREATE USER '$DB_USER'@'localhost' IDENTIFIED BY '$DB_PASS'; GRANT ALL PRIVILEGES ON $DB_NAME.* TO '$DB_USER'@'localhost'; FLUSH PRIVILEGES;"
 
 # complete installation
-
 URL="http://127.0.0.1/admin/install.php"
-CURL="curl -c /tmp/cookie -b /tmp/cookie"
-$CURL $URL --data "db_type=mysqli&hostname=localhost&db_username=$DB_USER&db_password=$DB_PASS&database_name=$DB_NAME&admin_username=&admin_password=&db_table_prefix=mantis&db_table_plugin_prefix=plugin&db_table_suffix=table&timezone=UTC&install=2&go=Install%2FUpgrade+Database"
+curl --fail --silent --show-error \
+    --cookie-jar /tmp/mantis-cookie --cookie /tmp/mantis-cookie \
+    --data-urlencode db_type=mysqli \
+    --data-urlencode hostname=localhost \
+    --data-urlencode "db_username=$DB_USER" \
+    --data-urlencode "db_password=$DB_PASS" \
+    --data-urlencode "database_name=$DB_NAME" \
+    --data-urlencode admin_username= \
+    --data-urlencode admin_password= \
+    --data-urlencode db_table_prefix=mantis \
+    --data-urlencode db_table_plugin_prefix=plugin \
+    --data-urlencode db_table_suffix=table \
+    --data-urlencode timezone=UTC \
+    --data-urlencode install=2 \
+    --data-urlencode 'go=Install/Upgrade Database' \
+    "$URL" > /tmp/mantis-install-result
+grep -Fq 'MantisBT was installed successfully.' /tmp/mantis-install-result
+test -f "$CONF"
+
+# Let Mantis derive its public URL from each request rather than preserving the
+# build-only loopback URL written by the web installer.
+sed -i '/^\$g_path[[:space:]]*=/d' "$CONF"
 
 # change administrator name to admin
-mysql --defaults-extra-file=/etc/mysql/debian.cnf <<EOF
-USE $DB_NAME;
-UPDATE mantis_user_table SET username = '$ADMIN_NAME' WHERE id = 1;
-EOF
+mariadb --batch "$DB_NAME" --execute \
+    "UPDATE mantis_user_table SET username = '$ADMIN_NAME' WHERE id = 1;"
+test "$(mariadb --batch --skip-column-names "$DB_NAME" --execute \
+    "SELECT COUNT(*) FROM mantis_user_table WHERE username = '$ADMIN_NAME'")" = 1
 
-# add settings
-cat << 'EOF' >> $WEBROOT/config/config_inc.php
-
-// support graphing
-$g_use_jpgraph = true;
-$g_jpgraph_path = "/usr/share/jpgraph/";
-
-// integrate mantis with twitter (disabled if user is empty)
-$g_twitter_username = '';
-$g_twitter_password = '';
-EOF
-
-service mysql stop
+service mariadb stop
 service apache2 stop
 
-rm -f /tmp/cookie
-rm -rf $WEBROOT/admin
+rm -f /tmp/mantis-cookie /tmp/mantis-install-result
+rm -rf "$WEBROOT/admin"
 
 mkdir -p /etc/mantis
-ln -s $WEBROOT/config_inc.php /etc/mantis/config_inc.php
-chown -R root:root $WEBROOT/config
-
+ln -s "$CONF" /etc/mantis/config_inc.php
+chown -R root:root "$WEBROOT/config"
