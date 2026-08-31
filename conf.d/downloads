@@ -1,13 +1,17 @@
-#!/bin/bash -ex
+#!/bin/bash
+set -Eeuxo pipefail
 
-dl() {
-    [ "$FAB_HTTP_PROXY" ] && PROXY="--proxy $FAB_HTTP_PROXY"
-    cd $2; curl -L -f -O $PROXY $1; cd -
-}
+VERSION=2.28.4
+ARCHIVE="mantisbt-$VERSION.tar.gz"
+URL="https://downloads.sourceforge.net/project/mantisbt/mantis-stable/$VERSION/$ARCHIVE"
+SHA256=a400bd2957154baad3412130031e893d5c18cf1ed1cfb38b77ee64afd1ed2a33
 
-VERSION=2.25.8
-SRC="/usr/local/src"
-URL="https://downloads.sourceforge.net/project/mantisbt/mantis-stable/$VERSION/mantisbt-$VERSION.tar.gz"
+proxy=()
+if [[ -n ${FAB_HTTP_PROXY:-} ]]; then
+    proxy=(--proxy "$FAB_HTTP_PROXY")
+fi
 
-dl $URL $SRC
-
+curl --fail --location "${proxy[@]}" "$URL" \
+    --output "/usr/local/src/$ARCHIVE"
+printf '%s  %s\n' "$SHA256" "/usr/local/src/$ARCHIVE" |
+    sha256sum --check --strict -
